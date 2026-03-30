@@ -1,0 +1,12 @@
+illumination_gt/
+scenes/
+__pycache__/
+scenes_shots/
+res/
+ball_data.csv
+*.png
+.venv/
+.idea/
+*.NEF
+*jpg
+model_visualization
