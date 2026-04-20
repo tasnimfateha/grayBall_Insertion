@@ -34,37 +34,42 @@ pip install -r requirements.txt
 ## The Project's Pipeline
 
 ### Step 1 - Download dataset
+
 Here we used a script *DataImport.py* + we attach a link to a Google Drive (in case the website is not working). 
 Downloads images into:
-
 scenes/ (reference scene images without drone)
 scenes_shots/ (images with drone + ball)
 
 ### Step 2 - Detect and crop the ball
-Script:
 
-ball_segment_anything.py
+Script: *ball_segment_anything.py* , uses Segment Anything Model (SAM).
+The script crops and masks images to isolate the ball and saves the output: x_center, y_center, radius in *ball_data_modified.csv* for every image.
 
-Uses Segment Anything Model (SAM).
+### Step 3 - Compute geometric alignment
 
-Tasks:
+Script: *Feature_Matching_fast.py* to align scene image and scene shot. Since camera is fixed and drone moves we need to compute homography transformation, which is saved in: *homography_transformations.csv*.
 
-Detect the ball
-Segment it
-Crop the image around it
-Save coordinates
+### Step 4 - Create the training dataset
 
-Output:
+Script: *DatasetCreation.py* builds a PyTorch Dataset class.
+For each sample the input is a scene image and the target is a mask of grey ball.
+The mask is created using the stored center and radius from the CSV.
 
-ball_data_modified.csv
+### Step 5 - Train the network
 
-which stores:
+Script: *train_unet_mobilenet.py* uses encoder architecture MobileNetV3 and decoder architecture U-Net.
 
-x_center
-y_center
-radius
+Input image
+      ↓
+MobileNetV3 (feature extraction)
+      ↓
+U-Net decoder
+      ↓
+segmentation mask
 
-for every image.
+Loss function likely: BCE loss or Dice loss (will have to correct that!)
+Goal is to minimize the difference between predicted mask and ground truth mask.
 
-From the README:
-the script crops and masks images to isolate the ball and saves center + radius
+### Step 6 - Visualize predictions
+
+Script: *overlay_model_results.py*, overlays predicted mask + original image to see whether the model detected the ball correctly.
