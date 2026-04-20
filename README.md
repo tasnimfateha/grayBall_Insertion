@@ -30,3 +30,41 @@ Then Install all required Python packages using:
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+## The Project's Pipeline
+
+### Step 1 - Download dataset
+Here we used a script *DataImport.py* + we attach a link to a Google Drive (in case the website is not working). 
+Downloads images into:
+
+scenes/ (reference scene images without drone)
+scenes_shots/ (images with drone + ball)
+
+### Step 2 - Detect and crop the ball
+Script:
+
+ball_segment_anything.py
+
+Uses Segment Anything Model (SAM).
+
+Tasks:
+
+Detect the ball
+Segment it
+Crop the image around it
+Save coordinates
+
+Output:
+
+ball_data_modified.csv
+
+which stores:
+
+x_center
+y_center
+radius
+
+for every image.
+
+From the README:
+the script crops and masks images to isolate the ball and saves center + radius
