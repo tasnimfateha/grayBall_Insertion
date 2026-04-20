@@ -59,13 +59,7 @@ The mask is created using the stored center and radius from the CSV.
 
 Script: *train_unet_mobilenet.py* uses encoder architecture MobileNetV3 and decoder architecture U-Net.
 
-Input image
-      ↓
-MobileNetV3 (feature extraction)
-      ↓
-U-Net decoder
-      ↓
-segmentation mask
+Input image ⮕ MobileNetV3 (feature extraction) ⮕ U-Net decoder ⮕ segmentation mask
 
 Loss function likely: BCE loss or Dice loss (will have to correct that!)
 Goal is to minimize the difference between predicted mask and ground truth mask.
