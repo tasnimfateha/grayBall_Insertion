@@ -70,8 +70,7 @@ Script: *train_unet_mobilenet.py* uses encoder architecture MobileNetV3 and deco
 
 Input image ⮕ MobileNetV3 (feature extraction) ⮕ U-Net decoder ⮕ segmentation mask
 
-Loss function likely: BCE loss or Dice loss (will have to correct that!)
-Goal is to minimize the difference between predicted mask and ground truth mask.
+Loss function likely: BCE loss or Dice loss (will have to correct that!). Goal is to minimize the difference between predicted mask and ground truth mask.
 
 ### Step 8 - Visualize predictions
 
