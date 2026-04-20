@@ -73,6 +73,6 @@ Input image ⮕ MobileNetV3 (feature extraction) ⮕ U-Net decoder ⮕ segmentat
 Loss function likely: BCE loss or Dice loss (will have to correct that!)
 Goal is to minimize the difference between predicted mask and ground truth mask.
 
-### Step 6 - Visualize predictions
+### Step 8 - Visualize predictions
 
 Script: *overlay_model_results.py*, overlays predicted mask + original image to see whether the model detected the ball correctly (location, ball's shape and etc).
