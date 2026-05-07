@@ -160,8 +160,8 @@ def process_scene_csv(csv_path: str, shot_index: dict, model) -> list:
     # Read the CSV file
     df = pd.read_csv(csv_path)
 
-    # Only keep the necessary columns (image_name, circle_x, circle_y, circle_radiuos)
-    required_cols = ['image_name', 'circle_x', 'circle_y', 'circle_radiuos']
+    # Only keep the necessary columns (image_name, circle_x, circle_y, circle_radius)
+    required_cols = ['image_name', 'circle_x', 'circle_y', 'circle_radius']
     df = df[required_cols]
 
     # Ensure image_name is in the correct format (removing extensions)
@@ -183,7 +183,7 @@ def process_scene_csv(csv_path: str, shot_index: dict, model) -> list:
         try:
             cx = int(round(float(row["circle_x"])))
             cy = int(round(float(row["circle_y"])))
-            radius0 = int(round(float(row["circle_radiuos"])))
+            radius0 = int(round(float(row["circle_radius"])))
         except Exception as e:
             print(f"[{scene_id}] invalid coordinates in row for {shot_id}: {e}")
             continue
@@ -209,7 +209,7 @@ def process_scene_csv(csv_path: str, shot_index: dict, model) -> list:
                 "image_name": shot_id,
                 "circle_x": int(center[0]),
                 "circle_y": int(center[1]),
-                "circle_radiuos": int(radius)
+                "circle_radius": int(radius)
             })
 
             print(f"[{scene_id}] {idx + 1}/{len(df)} {shot_id} -> center=({center[0]}, {center[1]}), radius={radius}")
