@@ -53,20 +53,22 @@ Grey_Ball_Insertion/
 ├── Masked_Crops/
 ├── checkpoints/
 ├── training_outputs/
-├── runs/
+├── final_visualizations/
 │
 ├── matching_results.csv
 ├── Updated_Ball_Data.csv
 ├── ball_data_modified.csv
 │
+├── README
+│
+├── DataImport
 ├── matching_data.py
 ├── segmentation.py
 ├── GreyBallInsertionDataset.py
 ├── UNet_MobileNet.py
 ├── Training.py
 ├── model_results.py
-├── utils.py
-└── sam2.1_l.pt
+└── utils.py
 ```
 
 ### Main Input Folders
@@ -75,6 +77,7 @@ Grey_Ball_Insertion/
 * scenes_shots/ - contains scene-shot images where the grey ball is visible.
 * illumination_gt/ - contains the original ground-truth CSV files for each scene (image_name, circle_x, circle_y, circle_radius).
 * Masked_Crops/ - created by segmentation.py,contains cropped 256×256 masked ball images, used as the training targets.
+* final_visualizations/ - comparison images of how predicted ball matches the ground-truth ball and the scene illumination.
 
   ### Main CSV Files
 * ball_data_modified.csv - contains approximate ball positions before SAM refinement (prepared manually from original ball position CSV files).
@@ -88,7 +91,6 @@ Downloads images into:
 * scenes/ (reference scene images without drone)
 * scenes_shots/ (images with drone + ball)
 * illumination_gt/ (original ball position CSV files)
-* sam2.1_l.pt (the SAM checkpoint required for segmentation)
 
 ### Step 2 - Compute Geometric Alignment
 
@@ -126,22 +128,15 @@ Then it creates a train/validation split: 80% training and 20% validation.
 The loss is masked L1 loss. This means the model is punished only for errors inside the ball area, while the black background is ignored. The training script also saves TensorBoard logs, checkpoints, and visual prediction examples.
 
 #### Training outputs
-After running Training.py, the following folders are created.
+After running Training.py, the following folders are created:
 
 * checkpoints/ - stores the model with the lowest validation loss.
 * training_outputs/ - contains visual training examples for training and validation both ground truth and prediction.
 These images help check whether the model prediction is becoming similar to the real grey ball crop.
 
-* runs/
-
-Contains TensorBoard logs:
-
-runs/grey_ball_insertion/
-
-To view the loss curves:
-
-tensorboard --logdir runs
-
 ### Step 7 - Visualize final predictions
 Run: python overlay_model_results.py. 
+It creates:
+* final_visualizations/
+
 The final visualization step loads the best trained checkpoint and applies the model to validation samples. For each sample, the predicted grey ball patch is masked and overlaid onto the local scene crop. The saved comparison images allow us to evaluate how well the predicted ball matches the ground-truth ball and the scene illumination.
