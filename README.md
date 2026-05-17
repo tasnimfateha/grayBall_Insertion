@@ -44,6 +44,7 @@ Output:
 256×256 RGB predicted grey ball patch
 
 ### The Project's Structure:
+```text
 Grey_Ball_Insertion/
 │
 ├── scenes/
@@ -66,6 +67,7 @@ Grey_Ball_Insertion/
 ├── model_results.py
 ├── utils.py
 └── sam2.1_l.pt
+```
 
 ### Main Input Folders
 
@@ -75,8 +77,8 @@ Grey_Ball_Insertion/
 * Masked_Crops/ - created by segmentation.py,contains cropped 256×256 masked ball images, used as the training targets.
 
   ### Main CSV Files
-* ball_data_modified.csv - contains approximate ball positions before SAM refinement.
-* Updated_Ball_Data.csv - created by segmentation.py, the updated annotation file after SAM-based preprocessing. It stores the refined ball center and radius for each processed image.
+* ball_data_modified.csv - contains approximate ball positions before SAM refinement (prepared manually from original ball position CSV files).
+* Updated_Ball_Data.csv - created by segmentation.py, the updated annotation file after SAM-based preprocessing, used for future model training. It stores the refined ball center and radius for each processed image.
 * matching_results.csv - created by matching_data.py, stores the 3×3 homography matrix for each scene-shot pair. The homography is used to align the clean reference scene with the corresponding scene-shot image.
   
 ### Step 1 - Prepare the Dataset
@@ -99,8 +101,8 @@ The purpose of this step is to align the clean reference scene with the scene-sh
 
 Run: python segmentation.py, uses Segment Anything Model (SAM).
 It creates:
-Masked_Crops/
-Updated_Ball_Data.csv
+* Masked_Crops/
+* Updated_Ball_Data.csv
 
 The script crops and masks images to isolate the ball and saves the output. So this step prepares the training targets. The model does not directly learn from the full shot image. It learns from the cropped masked ball image.
 
@@ -110,22 +112,36 @@ Run: python GreyBallInsertionDataset.py. This file checks whether the dataset ca
 
 The dataset file loads the clean scene, applies the homography, crops around the ball position, loads the masked target ball crop, creates a binary mask, converts everything to PyTorch tensors, and normalizes the global scene for MobileNetV3.
 
-
-
-
 ### Step 5 - Define the Model Architecture
 
-Script: *unet.py* , contains the neural network architecture.
-The relevant model is: U-Net + MobileNetV3
+Run: python UNet_MobileNet.py.
+This checks the model input and output shapes. The relevant neural network model is: U-Net + MobileNetV3
 
-### Step 7 - Train the model
+### Step 6 - Train the model
 
-Script: *train_unet_mobilenet.py* uses encoder architecture MobileNetV3 and decoder architecture U-Net.
+Run: python Training.py. This file trains UNetMobileNetV3.
+It reads: Updated_Ball_Data.csv, matching_results.csv, scenes/, Masked_Crops/.
+Then it creates a train/validation split: 80% training and 20% validation.
 
-Input image ⮕ MobileNetV3 (feature extraction) ⮕ U-Net decoder ⮕ segmentation mask
+The loss is masked L1 loss. This means the model is punished only for errors inside the ball area, while the black background is ignored. The training script also saves TensorBoard logs, checkpoints, and visual prediction examples.
 
-Loss function likely: BCE loss or Dice loss (will have to correct that!). Goal is to minimize the difference between predicted mask and ground truth mask.
+#### Training outputs
+After running Training.py, the following folders are created.
 
-### Step 8 - Visualize predictions
+* checkpoints/ - stores the model with the lowest validation loss.
+* training_outputs/ - contains visual training examples for training and validation both ground truth and prediction.
+These images help check whether the model prediction is becoming similar to the real grey ball crop.
 
-Script: *overlay_model_results.py*, overlays predicted mask + original image to see whether the model detected the ball correctly (location, ball's shape and etc).
+* runs/
+
+Contains TensorBoard logs:
+
+runs/grey_ball_insertion/
+
+To view the loss curves:
+
+tensorboard --logdir runs
+
+### Step 7 - Visualize final predictions
+Run: python overlay_model_results.py. 
+The final visualization step loads the best trained checkpoint and applies the model to validation samples. For each sample, the predicted grey ball patch is masked and overlaid onto the local scene crop. The saved comparison images allow us to evaluate how well the predicted ball matches the ground-truth ball and the scene illumination.
