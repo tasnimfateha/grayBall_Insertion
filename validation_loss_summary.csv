@@ -1,0 +1,4 @@
+Run (Event File),Best Validation Loss,Best Epoch,Final Validation Loss,Final Epoch,Average Validation Loss
+events.out.tfevents.1778183757.Chmonya.24548.0,0.16099493205547333,1,0.16099493205547333,1,0.18556296080350876
+events.out.tfevents.1778189136.vm-imlex-cosi-4.108644.0,0.07764509320259094,42,0.08226021379232407,49,0.10330203503370285
+Overall (Across Runs),0.07764509320259094,44,-,-,0.10646591679408

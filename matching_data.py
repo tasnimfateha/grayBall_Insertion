@@ -36,7 +36,7 @@ SCENE_NAMES = [
     "edu_area", "foodcourt_mcnz", "hallway", "image_theater",
     "owl_statue", "playground", "rugs", "seat_rows", "study_area",
     "stump", "subway1", "subway2", "theater", "tree_tunel",
-    "uncle_faith1", "uncle_faith2", "under_tree2", "wall_art",
+    "uncle_fatih1", "uncle_fatih2", "under_tree2", "wall_art",
     "wall_hallway", "wall_lab"
 ]
 

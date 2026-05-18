@@ -161,7 +161,8 @@ def process_scene_csv(csv_path: str, shot_index: dict, model) -> list:
     df = pd.read_csv(csv_path)
 
     # Only keep the necessary columns (image_name, circle_x, circle_y, circle_radius)
-    required_cols = ['image_name', 'circle_x', 'circle_y', 'circle_radius']
+    # Note: Column name is 'circle_radiuos' (misspelled) in existing data for backwards compatibility
+    required_cols = ['image_name', 'circle_x', 'circle_y', 'circle_radiuos']
     df = df[required_cols]
 
     # Ensure image_name is in the correct format (removing extensions)
@@ -183,7 +184,8 @@ def process_scene_csv(csv_path: str, shot_index: dict, model) -> list:
         try:
             cx = int(round(float(row["circle_x"])))
             cy = int(round(float(row["circle_y"])))
-            radius0 = int(round(float(row["circle_radius"])))
+            # Using 'circle_radiuos' (misspelled) for backwards compatibility with existing data
+            radius0 = int(round(float(row["circle_radiuos"])))
         except Exception as e:
             print(f"[{scene_id}] invalid coordinates in row for {shot_id}: {e}")
             continue
@@ -197,7 +199,7 @@ def process_scene_csv(csv_path: str, shot_index: dict, model) -> list:
             _, center, radius = calculate_mask_params(mask) if mask is not None else (None, (cx, cy), radius0)
 
             # Crop the masked image
-            masked_image = image * mask[:, :, np.newaxis]
+            masked_image = (image.astype(np.float32) * mask[:, :, np.newaxis].astype(np.float32)).astype(np.uint8)
             cropped_masked = crop_image(masked_image, center[0], center[1], CROP_SIZE)
 
             # Save the cropped image
@@ -205,11 +207,13 @@ def process_scene_csv(csv_path: str, shot_index: dict, model) -> list:
             cv2.imwrite(output_path, cropped_masked)
 
             # Append the processed row data
+            # Note: Keeping 'circle_radiuos' spelling for output compatibility with existing pipelines
             scene_rows.append({
+                "scene_id": scene_id,
                 "image_name": shot_id,
                 "circle_x": int(center[0]),
                 "circle_y": int(center[1]),
-                "circle_radius": int(radius)
+                "circle_radiuos": int(radius)
             })
 
             print(f"[{scene_id}] {idx + 1}/{len(df)} {shot_id} -> center=({center[0]}, {center[1]}), radius={radius}")
